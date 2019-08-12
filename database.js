@@ -7,7 +7,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(
 let db;
 const setBlocks = async (latestIndex, db, client, cb) => {
     return new Promise(async resolve => {
-        const blockCount = 40;
+        const blockCount = 10000;
         for (let i = 0; i <= blockCount; i++) {
             let block = await web3.eth.getBlock(latestIndex - i);
             let blockObj = {
