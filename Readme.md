@@ -31,3 +31,8 @@ To start the api server, run
 2. `node index.js`
 
 
+## Dependencies
+
+* Node Version: `v10.16.0`
+* mongodb version: `v4.0.12`
+* web3 version: `^1.2.1`
