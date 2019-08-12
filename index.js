@@ -16,10 +16,14 @@ MongoClient.connect('mongodb://localhost:27017/block', async (err, client) => {
 });
 
 
-
-app.listen(3000,()=>{
-    console.log("app listening on 3000")
-})
+app.listen(3000, () => {
+    console.log("app listening on 3000");
+    console.log("api endpoints:");
+    console.log('   getBlockNumber/:blockNumber');
+    console.log('   getBlockByHash/:blockHash');
+    console.log('   getTransactionData/:txHash');
+    console.log('   getUserTransactions/:userAddress')
+});
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -65,10 +69,13 @@ app.get('/getUserTransactions/:userAddress', function (req, response) {
 
     const userAddress = req.params.userAddress;
 
-    db.collection('transactions').find({from : userAddress}).toArray((err, result)=> {
-        console.log(result)
-        let responseObj = {}
+    db.collection('transactions').find({from: userAddress}).toArray((err, result) => {
+        console.log(result);
+        let responseObj = {};
         responseObj.userTransactions = result;
+        if (result.length === 0) {
+            response.send(" No Transactions found for this user")
+        }
         response.send(responseObj)
     })
 
