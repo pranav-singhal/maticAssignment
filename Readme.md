@@ -1,16 +1,7 @@
-## Api Endpoints
 
+#Instructions
 
-### Get
-* `getBlockNumber/:blockNumber`
-
-* `getBlockByHash/:blockHash`
-* `getTransactionData/:txHash`
-* `getUserTransactions/:userAddress`  
-
-
-
-## Index database
+## 1. Index database
 
 To index the last 10,000 blocks, run 
 
@@ -23,12 +14,34 @@ To index the last 10,000 blocks, run
 
 
 
-##Start API server
+## 2. Start API server
 
 To start the api server, run
 
 1. `yarn install`
 2. `node index.js`
+
+
+
+## Api Endpoints
+
+
+### Get
+* `getBlockNumber/:blockNumber`
+
+parameter: block number of the block that you want to fetch the data of
+
+* `getBlockByHash/:blockHash`
+
+parameter: hash of the block that you want to fetch the data of
+
+* `getTransactionData/:txHash`
+
+parameter: hash of the transaction you want to fetch the information for
+
+* `getUserTransactions/:userAddress`
+
+parameter: user address whose transactions you want to see    
 
 
 ## Dependencies

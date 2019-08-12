@@ -51,17 +51,29 @@ app.get('/getBlockByHash/:blockHash', function (req, response) {
 
 
 app.get('/getTransactionData/:txHash', function (req, response) {
-    web3.eth.getTransaction(req.params.txHash).then(tx => {
-        // console.log(tx);
-        let resObj = {};
-        resObj.txHash = req.params.txHash;
-        resObj.from = tx.from;
-        resObj.to = tx.to;
-        resObj.blockNumber = tx.blockNumber;
-        response.send(resObj);
+    console.log(req.params.txHash.length)
+
+    if(req.params.txHash.length ===66){
+
+            web3.eth.getTransaction(req.params.txHash).then(tx => {
+                // console.log(tx);
+                let resObj = {};
+                resObj.txHash = req.params.txHash;
+                resObj.from = tx.from;
+                resObj.to = tx.to;
+                resObj.blockNumber = tx.blockNumber;
+                response.send(resObj);
 
 
-    })
+            }).catch(e => {
+                response.send(" This transaction is not indexed")
+            })
+
+
+
+    }else{
+        response.send(" invalid transaction hash")
+    }
 });
 
 
