@@ -21,10 +21,27 @@ const getBlocks = async (latestIndex, db) => {
                 blockNumber: block.number,
                 index: i
             };
-            console.log(blockObj);
-            db.collection('blocks').insertOne(blockObj, () => {
-                console.log(block.number, 'added to db')
-            })
+            db.collection('blocks').insertOne(blockObj, (error, response) => {
+                console.log(response.ops[0]);
+                let newBlock = response.ops[0];
+
+                if (newBlock.transactions.length !== 0) {
+                    newBlock.transactions.forEach((txHash) => {
+                        web3.eth.getTransaction(txHash).then(tx => {
+                            let txObject ={}
+                            txObject.txHash = txHash
+                            txObject.blockId = newBlock._id
+                            txObject.from = tx.from;
+                            txObject.to = tx.to;
+                            txObject.blockNumber = tx.blockNumber;
+                            db.collection('transactions').insertOne(txObject);
+
+                        })
+                    })
+
+                }
+            });
+
         })
 
     }
@@ -32,7 +49,7 @@ const getBlocks = async (latestIndex, db) => {
 MongoClient.connect('mongodb://localhost:27017/block', function (err, client) {
     if (err) throw err;
 
-    db = client.db('blocks');
+    db = client.db('matic');
     web3.eth.getBlock('latest').then((latestBlock) => {
 
 
@@ -46,30 +63,6 @@ MongoClient.connect('mongodb://localhost:27017/block', function (err, client) {
     })
 
 });
-
-
-// db.collection('blocks').insertOne({name: "pranav singhal2"}, function () {
-//     db.collection('blocks').find().toArray(function (err, result) {
-//         if (err) throw err;
-//         console.log("inside blocks");
-//         console.log(result);
-//
-//     })
-// })
-
-// web3.eth.getBlock('latest').then(console.log);
-
-
-// get latest block's block number
-// find the latest block
-// save its number
-// for latest block to latest minus 10000 blocks
-// get transactions of each block
-// save each transaction's from to and transactionHash
-// create an api end point to query blocks
-// query according to blockNumber
-// query according to numberOfLatestBlocks
-
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/index.html'));
@@ -96,11 +89,10 @@ app.get('/getBlockByHash/:blockHash', function (req, response) {
 });
 
 
-
-app.get('/getTransactionData/:txHash',function (req,response) {
+app.get('/getTransactionData/:txHash', function (req, response) {
     web3.eth.getTransaction(req.params.txHash).then(tx => {
         // console.log(tx);
-        let resObj  ={};
+        let resObj = {};
         resObj.txHash = req.params.txHash;
         resObj.from = tx.from;
         resObj.to = tx.to;
@@ -109,6 +101,21 @@ app.get('/getTransactionData/:txHash',function (req,response) {
 
 
     })
-})
+});
+
+
+app.get('/getUserTransactions/:userAddress', function (req, response) {
+
+    const userAddress = req.params.userAddress;
+
+    db.collection('transactions').find({from : userAddress}).toArray((err, result)=> {
+        console.log(result)
+        let responseObj = {}
+        responseObj.userTransactions = result;
+        response.send(responseObj)
+    })
+
+});
+
 
 
